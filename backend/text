@@ -1,0 +1,18 @@
+postgret 
+psql -U postgres -d Albergue
+\dt --> muestra las tablas
+SELECT * FROM users;--> esto mostrara los regitros de la tablas
+
+INSERT INTO users (name, email, password) 
+VALUES ('Gladys', 'gladys@example.com', '123456'); --->probar para insertar manualmente 
+
+http://localhost:5000/api/usuarios/crear-usuario --POST ,control(z)
+http://localhost:5000/api/usuarios ---ver los usuarios registrados ya se administrador y usuario
+{
+  "nombre": "Administrador",
+  "apellido_paterno": "Nina",
+  "apellido_materno": "Quispe",
+  "correo_electronico": "Administrador@gmail.com",
+  "contrasena": "admi-123",
+  "telefono": "12345678"
+}
