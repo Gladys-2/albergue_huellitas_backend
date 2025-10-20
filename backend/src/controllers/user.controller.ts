@@ -2,9 +2,10 @@ import { Request, Response } from "express";
 import { Usuario } from "../models/user.model";
 import bcrypt from "bcrypt";
 
+{/* Crear usuario normal */}
 export const crearUsuario = async (req: Request, res: Response) => {
   try {
-    const { nombre, apellido_paterno, apellido_materno, cedula_identidad, telefono, correo_electronico, contrasena, rol, genero } = req.body;
+    const { nombre, apellido_paterno, apellido_materno, cedula_identidad, telefono, correo_electronico, contrasena, rol, genero, estado } = req.body;
 
     const existe = await Usuario.findOne({ where: { correo_electronico } });
     if (existe) return res.status(400).json({ message: "Correo ya registrado" });
@@ -20,7 +21,8 @@ export const crearUsuario = async (req: Request, res: Response) => {
       correo_electronico,
       contrasena: hash,
       rol: rol || "usuario",
-      genero
+      genero,
+      estado: estado || "Activo"
     });
 
     const { contrasena: _, ...usuarioSinContrasena } = usuario.get({ plain: true });
@@ -31,6 +33,7 @@ export const crearUsuario = async (req: Request, res: Response) => {
   }
 };
 
+{/*Crear administrador */}
 export const crearAdministrador = async (req: Request, res: Response) => {
   try {
     const { nombre, apellido_paterno, apellido_materno, correo_electronico, contrasena } = req.body;
@@ -57,6 +60,7 @@ export const crearAdministrador = async (req: Request, res: Response) => {
   }
 };
 
+{/*Obtener todos los usuarios*/}
 export const obtenerUsuarios = async (req: Request, res: Response) => {
   try {
     const usuarios = await Usuario.findAll({ attributes: { exclude: ["contrasena"] } });
@@ -67,6 +71,7 @@ export const obtenerUsuarios = async (req: Request, res: Response) => {
   }
 };
 
+{/*Eliminar usuario*/}
 export const eliminarUsuario = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -76,5 +81,23 @@ export const eliminarUsuario = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error al eliminar usuario", error });
+  }
+};
+
+{/*Actualizar usuario*/}
+export const actualizarUsuario = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { nombre, apellido_paterno, apellido_materno, cedula_identidad, telefono, genero, rol, estado } = req.body;
+
+    const usuario = await Usuario.findByPk(id);
+    if (!usuario) return res.status(404).json({ message: "Usuario no encontrado" });
+
+    await usuario.update({ nombre, apellido_paterno, apellido_materno, cedula_identidad, telefono, genero, rol, estado });
+    const { contrasena: _, ...usuarioSinContrasena } = usuario.get({ plain: true });
+    res.json({ message: "Usuario actualizado correctamente", usuario: usuarioSinContrasena });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error al actualizar usuario", error });
   }
 };

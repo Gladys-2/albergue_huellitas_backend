@@ -1,43 +1,52 @@
 import { Request, Response } from "express";
 import Donacion from "../models/donacion.model";
+import Usuario from "../models/user.model";
 
-{/*GET todas las donaciones*/}
-export const obtenerDonaciones = async (req: Request, res: Response) => {
+export const getDonaciones = async (req: Request, res: Response) => {
   try {
-    const donaciones = await Donacion.findAll();
+    const donaciones = await Donacion.findAll({ include: [Usuario] });
     res.json(donaciones);
   } catch (error) {
     res.status(500).json({ message: "Error al obtener donaciones", error });
   }
 };
 
-{/*POST crear donación*/}
 export const crearDonacion = async (req: Request, res: Response) => {
   try {
-    const donacion = await Donacion.create(req.body);
+    const { usuario_id, monto, tipo } = req.body;
+    const usuario = await Usuario.findByPk(usuario_id);
+    if (!usuario) return res.status(404).json({ message: "Usuario no encontrado" });
+
+    const donacion = await Donacion.create({ usuario_id, monto, tipo });
     res.status(201).json(donacion);
   } catch (error) {
     res.status(500).json({ message: "Error al crear donación", error });
   }
 };
 
-{/*PUT actualizar*/}
 export const actualizarDonacion = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    await Donacion.update(req.body, { where: { id } });
-    res.json({ message: "Donación actualizada" });
+    const { monto, tipo } = req.body;
+
+    const donacion = await Donacion.findByPk(id);
+    if (!donacion) return res.status(404).json({ message: "Donación no encontrada" });
+
+    await donacion.update({ monto, tipo });
+    res.json(donacion);
   } catch (error) {
     res.status(500).json({ message: "Error al actualizar donación", error });
   }
 };
 
-{/*DELETE eliminar*/}
 export const eliminarDonacion = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    await Donacion.destroy({ where: { id } });
-    res.json({ message: "Donación eliminada" });
+    const donacion = await Donacion.findByPk(id);
+    if (!donacion) return res.status(404).json({ message: "Donación no encontrada" });
+
+    await donacion.destroy();
+    res.json({ message: "Donación eliminada correctamente" });
   } catch (error) {
     res.status(500).json({ message: "Error al eliminar donación", error });
   }

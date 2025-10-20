@@ -1,21 +1,19 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/db";
+import Refugio from "./refugio.model";
 
-const Refugio = sequelize.define(
-  "Refugio",
+const Voluntario = sequelize.define(
+  "Voluntario",
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     nombre: { type: DataTypes.STRING, allowNull: false },
-    direccion: { type: DataTypes.TEXT, allowNull: false },
     telefono: { type: DataTypes.STRING },
     correo: { type: DataTypes.STRING }
   },
-  {
-    tableName: "refugios",
-    timestamps: true,
-    createdAt: "fecha_creacion",
-    updatedAt: "fecha_actualizacion"
-  }
+  { tableName: "voluntarios", timestamps: false }
 );
 
-export default Refugio;
+Refugio.hasMany(Voluntario, { foreignKey: "refugio_id" });
+Voluntario.belongsTo(Refugio, { foreignKey: "refugio_id" });
+
+export default Voluntario;
