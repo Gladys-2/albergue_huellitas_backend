@@ -59,9 +59,7 @@ export const crearAdministrador = async (req: Request, res: Response) => {
 
 export const obtenerUsuarios = async (req: Request, res: Response) => {
   try {
-    const usuarios = await Usuario.findAll({
-      attributes: { exclude: ["contrasena"] }
-    });
+    const usuarios = await Usuario.findAll({ attributes: { exclude: ["contrasena"] } });
     res.json(usuarios);
   } catch (error) {
     console.error(error);

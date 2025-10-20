@@ -12,9 +12,10 @@ export const loginUsuario = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Usuario o contraseña incorrecta" });
     }
 
+    // ✅ Acceder correctamente a la contraseña
     const hashContrasena = usuario.getDataValue("contrasena");
-
     const match = await bcrypt.compare(contrasena, hashContrasena);
+
     if (!match) {
       return res.status(401).json({ message: "Usuario o contraseña incorrecta" });
     }
