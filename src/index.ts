@@ -45,15 +45,14 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 const testConnection = async () => {
   try {
     await sequelize.authenticate();
-    console.log("Conexión a PostgreSQL exitosa ✅");
+    console.log("Conexión a PostgreSQL exitosa");
   } catch (error) {
-    console.error("Error al conectar a PostgreSQL ❌", error);
+    console.error("Error al conectar a PostgreSQL", error);
   }
 };
 
 testConnection();
 
-// Servidor
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
